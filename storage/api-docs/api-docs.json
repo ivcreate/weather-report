@@ -1,0 +1,255 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Tracked locations",
+        "description": "Methods for work with tracked locations",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/tracked-locations": {
+            "get": {
+                "tags": [
+                    "Tracked Locations"
+                ],
+                "summary": "Get all tracked locations",
+                "operationId": "ff076fa38a7e39cd31419d0b38e2c2da",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TrackedLocation"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tracked Locations"
+                ],
+                "summary": "Create a new tracked location",
+                "operationId": "93451b6a2f88aedd3d16025b4edb2e7b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTrackedLocationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Location created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/tracked-locations/{id}": {
+            "get": {
+                "tags": [
+                    "Tracked Locations"
+                ],
+                "summary": "Get a tracked location by ID",
+                "operationId": "cb0e3195df1cbe9673d2fdd1c4728397",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the tracked location",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackedLocation"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tracked location not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Tracked Locations"
+                ],
+                "summary": "Update a tracked location",
+                "operationId": "bbe33f27eba2f084ec9a6938ee3ca368",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the tracked location",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTrackedLocationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Location updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackedLocation"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tracked location not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Tracked Locations"
+                ],
+                "summary": "Delete a tracked location",
+                "operationId": "13eb5edc15b5b2ad42902afabf1b0bc8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the tracked location",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Tracked location deleted successfully"
+                    },
+                    "404": {
+                        "description": "Tracked location not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TrackedLocationStatusEnum": {
+                "title": "TrackedLocationStatusEnum",
+                "description": "Tracked location status enum",
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "processing",
+                    "completed"
+                ]
+            },
+            "CreateTrackedLocationRequest": {
+                "title": "Create Tracked Location Request",
+                "required": [
+                    "location_name"
+                ],
+                "properties": {
+                    "location_name": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "example": "Sample Location"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateTrackedLocationRequest": {
+                "title": "Update Tracked Location Request",
+                "required": [
+                    "location_name"
+                ],
+                "properties": {
+                    "location_name": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "example": "Sample Location"
+                    }
+                },
+                "type": "object"
+            },
+            "TrackedLocation": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "location_name": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/TrackedLocationStatusEnum"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "nullable": true
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

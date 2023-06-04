@@ -1,0 +1,75 @@
+version: '3.7'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: weather/app
+        container_name: ${ENV_NAME}_app
+        environment:
+            APP_ENV: ${APP_ENV}
+            APP_DEBUG: ${APP_DEBUG}
+            APP_URL: ${APP_URL}
+            DB_CONNECTION: ${DB_CONNECTION}
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        depends_on:
+            - db
+            - redis
+        networks:
+            - weather_network
+
+    db:
+        image: mysql:latest
+        container_name: ${ENV_NAME}_db
+        environment:
+            - MYSQL_DATABASE=${DB_DATABASE}
+            - MYSQL_USER=${DB_USERNAME}
+            - MYSQL_PASSWORD=${DB_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - weather_db-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - weather_network
+
+    redis:
+        image: redis:latest
+        container_name: ${ENV_NAME}_redis
+        volumes:
+            - weather_redis-data:/data
+        ports:
+            - "6379:6379"
+        networks:
+            - weather_network
+
+    nginx:
+        image: nginx:1.21-alpine
+        container_name: ${ENV_NAME}_nginx
+        env_file: .env
+        ports:
+            - 80:80
+        volumes:
+            - ./:/etc/nginx/conf.d
+            - .:/var/www/html
+        depends_on:
+            - app
+            - redis
+        networks:
+            - weather_network
+
+networks:
+    weather_network:
+        driver: bridge
+
+volumes:
+    weather_db-data:
+    weather_redis-data:
